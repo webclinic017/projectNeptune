@@ -1,7 +1,16 @@
 
 
-.container h2 {
+.container h2, h5 {
   text-align: center;
+}
+
+h2 {
+  color: gray;
+}
+
+h5 {
+  font-style: italic;
+  color: maroon;
 }
 
 
@@ -15,4 +24,12 @@
   margin: 1rem 0;
   border: 1px solid #ccc;
   padding: 1rem;
+}
+
+.charty {
+  margin: 100px 100px;
+}
+
+.banner {
+  margin-top: 50px;
 }
