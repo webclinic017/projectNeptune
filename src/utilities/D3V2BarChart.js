@@ -1,18 +1,14 @@
 import * as d3 from 'd3';
 
-const url = "https://udemy-react-d3.firebaseio.com/tallest_men.json";
-
 // define margins for axises to display
-const MARGIN = { TOP: 10, BOTTOM: 50, LEFT: 70, RIGHT: 10 }
+const MARGIN = { TOP: 10, BOTTOM: 70, LEFT: 70, RIGHT: 10 }
 
 // define width and height of the plot
 const WIDTH = 800 - MARGIN.LEFT - MARGIN.RIGHT;
 const HEIGHT = 500 - MARGIN.BOTTOM - MARGIN.TOP;
 
 export default class BarChartV2 {
-
   constructor(element) {
-
     // set this to this visualization
     const vis = this;
 
@@ -29,16 +25,17 @@ export default class BarChartV2 {
       .attr("x", WIDTH / 2)
       .attr("y", HEIGHT + 50)
       .attr("text-anchor", "middle")
-      .text("The worlds tallest men can't see me");
+      .text("The tallest people in the world")
+      .attr("fill","maroon");
 
     // y axis append label
     vis.svg.append("text")
       .attr("x", -HEIGHT / 2)
-      .attr("y", -40)
+      .attr("y", -50)
       .attr("text-anchor", "middle")
       .text("Height in cm")
       .attr("transform", `rotate(-90)`)
-      .attr("fill", "maroon");
+      .attr("fill", "grey");
 
 
     vis.xAxisGroup = vis.svg.append("g")
@@ -57,29 +54,22 @@ export default class BarChartV2 {
 
       let flag = true;
 
+      vis.data = men
+
+      vis.update()
+
       //set intervals for automatic updates
         d3.interval(() => {
           vis.data = flag ? men : women
           vis.update()
           flag =! flag
-        }, 1000)
+        }, 3000)
 
     
     })
 
-    // create the data loading function
-    // d3.json(url)
-    //   .then(data => {
-
-    //     // set the data to my vis object
-    //     vis.data = data
-    //     // set intervals for automatic updates
-    //     d3.interval(() => {
-    //       vis.update()
-    //     }, 500)
-
-    //   })
   }
+
 
   // create a function that updates each the graph changes
   update() {
@@ -102,21 +92,25 @@ export default class BarChartV2 {
 
     // call to calculate the x axis 
     const xAxisCall = d3.axisBottom(x)
-    vis.xAxisGroup.call(xAxisCall);
+    vis.xAxisGroup.transition().duration(500).call(xAxisCall);
 
     // call to calculate the y axis
     const yAxisCall = d3.axisLeft(y)
-    vis.yAxisGroup.call(yAxisCall);
+    vis.yAxisGroup.transition().duration(500).call(yAxisCall);
 
     // implement the data join
     const rects = vis.svg.selectAll("rect")
-      .data(vis.data);
+      .data(vis.data)
 
     // create the exit selector
-    rects.exit().remove();
+    rects.exit()
+      .transition().duration(500)
+      .attr("height", 0)
+      .attr("y", HEIGHT)
+      .remove()
 
     // create the update selector
-    rects
+    rects.transition().duration(500)
       .attr("x", d => x(d.name))
       .attr("y", d => y(d.height))
       .attr("width", x.bandwidth)
@@ -125,14 +119,12 @@ export default class BarChartV2 {
     // create the enter selector
     rects.enter().append("rect")
       .attr("x", d => x(d.name))
-      .attr("y", d => y(d.height))
       .attr("width", x.bandwidth)
-      .attr("height", d => HEIGHT - y(d.height))
-      .attr("fill", "grey");
-
-
-    console.log(rects)
-
+      .attr("fill", "grey")
+      .attr("y",HEIGHT)
+      .transition().duration(500)
+        .attr("height", d => HEIGHT - y(d.height))
+        .attr("y", d => y(d.height))
   }
 
 }
