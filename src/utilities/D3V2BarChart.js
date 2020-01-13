@@ -49,32 +49,24 @@ export default class BarChartV2 {
       d3.json("https://udemy-react-d3.firebaseio.com/tallest_men.json"),
       d3.json("https://udemy-react-d3.firebaseio.com/tallest_women.json")
     ]).then((datasets)=> {
-      
-      const [men, women] = datasets;
 
-      let flag = true;
-
-      vis.data = men
-
-      vis.update()
-
-      //set intervals for automatic updates
-        d3.interval(() => {
-          vis.data = flag ? men : women
-          vis.update()
-          flag =! flag
-        }, 3000)
-
-    
+      // establish data attributes
+      vis.menData = datasets[0];
+      vis.womenData = datasets[1];
+      vis.update("men");
     })
 
   }
-
-
   // create a function that updates each the graph changes
-  update() {
+  update(gender) {
 
     const vis = this;
+
+    // determine the data for update based on props
+    vis.data = (gender === "men") ? vis.menData : vis.womenData;
+
+    // set the initial display
+    // vis.update("men");
 
     // create the y scale
     const y = d3.scaleLinear()
